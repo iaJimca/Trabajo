@@ -4,67 +4,61 @@ import Modelo.Producto;
 import Modelo.ProductoPerecedero;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-/** Guarda todos los productos (en memoria) y ofrece las operaciones del sistema. */
 public class Inventario {
 
-    // La clave es el código del producto, así no se pueden repetir.
-    private Map<String, Producto> productos = new LinkedHashMap<>();
+    private List<Producto> productos = new ArrayList<>();
 
-    /** RF1: registrar. */
     public void registrar(Producto p) {
-        if (productos.containsKey(p.getCodigo())) {
-            throw new IllegalArgumentException(
-                "Ya existe un producto con el código " + p.getCodigo() + ".");
+        if (buscarPorCodigo(p.getCodigo()) != null) {
+            throw new IllegalArgumentException("Ya existe un producto con el código " + p.getCodigo() + ".");
         }
-        productos.put(p.getCodigo(), p);
+        productos.add(p);
     }
 
-    /** RF2: buscar por código. */
     public Producto buscarPorCodigo(String codigo) {
-        Producto p = productos.get(codigo.trim());
-        if (p == null) {
-            throw new IllegalArgumentException(
-                "No se encontró ningún producto con el código " + codigo.trim() + ".");
-        }
-        return p;
-    }
-
-    /** RF2: buscar por nombre (basta con escribir una parte). */
-    public List<Producto> buscarPorNombre(String texto) {
-        List<Producto> resultado = new ArrayList<>();
-        for (Producto p : productos.values()) {
-            if (p.getNombre().toLowerCase().contains(texto.trim().toLowerCase())) {
-                resultado.add(p);
+        for (Producto p : productos) {
+            if (p.getCodigo().equals(codigo.trim())) {
+                return p;
             }
         }
-        return resultado;
+        return null;
     }
 
-    /** RF3: entrada (positivo) o salida (negativo) de stock. */
+    public List<Producto> buscarPorNombre(String texto) {
+        List<Producto> encontrados = new ArrayList<>();
+        for (Producto p : productos) {
+            if (p.getNombre().toLowerCase().contains(texto.trim().toLowerCase())) {
+                encontrados.add(p);
+            }
+        }
+        return encontrados;
+    }
+
     public void actualizarStock(String codigo, int cambio) {
-        buscarPorCodigo(codigo).ajustarCantidad(cambio);
+        Producto p = buscarPorCodigo(codigo);
+        if (p == null) {
+            throw new IllegalArgumentException("No se encontró ningún producto con el código " + codigo.trim() + ".");
+        }
+        p.ajustarCantidad(cambio);
     }
 
-    /** RF4: eliminar. */
     public void eliminar(String codigo) {
         Producto p = buscarPorCodigo(codigo);
-        productos.remove(p.getCodigo());
+        if (p == null) {
+            throw new IllegalArgumentException("No se encontró ningún producto con el código " + codigo.trim() + ".");
+        }
+        productos.remove(p);
     }
 
-    /** RF5: listar. */
-    public Collection<Producto> listar() {
-        return productos.values();
+    public List<Producto> listar() {
+        return productos;
     }
 
-    /** RF6: productos con stock bajo. */
     public List<Producto> productosConStockBajo() {
         List<Producto> lista = new ArrayList<>();
-        for (Producto p : productos.values()) {
+        for (Producto p : productos) {
             if (p.tieneStockBajo()) {
                 lista.add(p);
             }
@@ -72,10 +66,9 @@ public class Inventario {
         return lista;
     }
 
-    /** RF7: productos vencidos. */
     public List<ProductoPerecedero> productosVencidos() {
         List<ProductoPerecedero> lista = new ArrayList<>();
-        for (Producto p : productos.values()) {
+        for (Producto p : productos) {
             if (p instanceof ProductoPerecedero) {
                 ProductoPerecedero pp = (ProductoPerecedero) p;
                 if (pp.estaVencido()) {
@@ -86,10 +79,9 @@ public class Inventario {
         return lista;
     }
 
-    /** RF7: productos próximos a vencer (30 días o menos). */
     public List<ProductoPerecedero> productosProximosAVencer() {
         List<ProductoPerecedero> lista = new ArrayList<>();
-        for (Producto p : productos.values()) {
+        for (Producto p : productos) {
             if (p instanceof ProductoPerecedero) {
                 ProductoPerecedero pp = (ProductoPerecedero) p;
                 if (pp.estaProximoAVencer()) {
@@ -100,11 +92,10 @@ public class Inventario {
         return lista;
     }
 
-    /** RF8: valor total. No pregunta de qué tipo es cada producto (polimorfismo). */
     public double valorTotal() {
         double total = 0;
-        for (Producto p : productos.values()) {
-            total += p.calcularValorInventario();
+        for (Producto p : productos) {
+            total = total + p.calcularValorInventario();
         }
         return total;
     }

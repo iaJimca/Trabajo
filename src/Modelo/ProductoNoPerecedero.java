@@ -2,11 +2,13 @@ package Modelo;
 
 import java.time.LocalDate;
 
-/** Producto que no caduca (tornillos, cables, herramientas). */
 public class ProductoNoPerecedero extends Producto {
 
-    public ProductoNoPerecedero(String codigo, String nombre, String categoria, String proveedor, int cantidad, int stockMinimo, double precioCompra, double precioVenta, LocalDate fechaIngreso) {
-        super(codigo, nombre, categoria, proveedor, cantidad, stockMinimo, precioCompra, precioVenta, fechaIngreso);
+    public ProductoNoPerecedero(String codigo, String nombre, String categoria, String proveedor,
+                                int cantidad, int stockMinimo, double precioCompra,
+                                double precioVenta, LocalDate fechaIngreso) {
+        super(codigo, nombre, categoria, proveedor, cantidad, stockMinimo,
+                precioCompra, precioVenta, fechaIngreso);
     }
 
     @Override

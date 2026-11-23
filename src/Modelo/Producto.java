@@ -3,11 +3,7 @@ package Modelo;
 import java.time.LocalDate;
 import java.util.Locale;
 
-/**
- * Clase abstracta: tiene los datos y métodos que todos los productos comparten.
- * Los atributos son privados y los setters revisan que los datos sean válidos
- * (encapsulamiento).
- */
+
 public abstract class Producto {
 
     private String codigo;
@@ -34,67 +30,87 @@ public abstract class Producto {
         this.fechaIngreso = fechaIngreso;
     }
 
-    // ---------- Métodos abstractos (cada hija los hace a su manera) ----------
-
-    /** Dinero que vale este producto en bodega. */
     public abstract double calcularValorInventario();
 
-    /** "Perecedero" o "No perecedero". */
     public abstract String getTipo();
 
-    /** Texto sobre la caducidad. */
     public abstract String getDetalleEspecifico();
 
-    // ---------- Métodos comunes ----------
-
-    /** Hay stock bajo cuando la cantidad es menor o igual al mínimo. */
     public boolean tieneStockBajo() {
         return cantidad <= stockMinimo;
     }
 
-    /** Suma (entrada) o resta (salida) unidades al stock. */
     public void ajustarCantidad(int cambio) {
         if (cantidad + cambio < 0) {
-            throw new IllegalArgumentException(
-                "No hay suficiente stock. Solo quedan " + cantidad + " unidades.");
+            throw new IllegalArgumentException("No hay suficiente stock. Solo quedan " + cantidad + " unidades.");
         }
-        cantidad += cambio;
+        cantidad = cantidad + cambio;
     }
 
-    // ---------- Getters ----------
+    public String getCodigo() {
+        return codigo;
+    }
 
-    public String getCodigo() { return codigo; }
-    public String getNombre() { return nombre; }
-    public String getCategoria() { return categoria; }
-    public String getProveedor() { return proveedor; }
-    public int getCantidad() { return cantidad; }
-    public int getStockMinimo() { return stockMinimo; }
-    public double getPrecioCompra() { return precioCompra; }
-    public double getPrecioVenta() { return precioVenta; }
-    public LocalDate getFechaIngreso() { return fechaIngreso; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    // ---------- Setters con validación ----------
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public String getProveedor() {
+        return proveedor;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public int getStockMinimo() {
+        return stockMinimo;
+    }
+
+    public double getPrecioCompra() {
+        return precioCompra;
+    }
+
+    public double getPrecioVenta() {
+        return precioVenta;
+    }
+
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
+    }
 
     public void setCodigo(String codigo) {
-        if (codigo == null || codigo.isBlank()) {
+        if (codigo == null || codigo.trim().isEmpty()) {
             throw new IllegalArgumentException("El código es obligatorio.");
         }
         this.codigo = codigo.trim();
     }
 
     public void setNombre(String nombre) {
-        if (nombre == null || nombre.isBlank()) {
+        if (nombre == null || nombre.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre es obligatorio.");
         }
         this.nombre = nombre.trim();
     }
 
     public void setCategoria(String categoria) {
-        this.categoria = (categoria == null || categoria.isBlank()) ? "General" : categoria.trim();
+        if (categoria == null || categoria.trim().isEmpty()) {
+            this.categoria = "General";
+        } else {
+            this.categoria = categoria.trim();
+        }
     }
 
     public void setProveedor(String proveedor) {
-        this.proveedor = (proveedor == null || proveedor.isBlank()) ? "Sin proveedor" : proveedor.trim();
+        if (proveedor == null || proveedor.trim().isEmpty()) {
+            this.proveedor = "Sin proveedor";
+        } else {
+            this.proveedor = proveedor.trim();
+        }
     }
 
     public void setCantidad(int cantidad) {
@@ -128,8 +144,8 @@ public abstract class Producto {
     @Override
     public String toString() {
         return String.format(Locale.US,
-            "[%s] %s | %s | cant: %d | mín: %d | compra: $%.2f | venta: $%.2f | %s",
-            codigo, nombre, getTipo(), cantidad, stockMinimo,
-            precioCompra, precioVenta, getDetalleEspecifico());
+                "[%s] %s | %s | cant: %d | mín: %d | compra: $%.2f | venta: $%.2f | %s",
+                codigo, nombre, getTipo(), cantidad, stockMinimo,
+                precioCompra, precioVenta, getDetalleEspecifico());
     }
 }
